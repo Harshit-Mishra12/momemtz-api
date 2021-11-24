@@ -77,7 +77,6 @@ class CustomersProfileController extends Controller
             $saved=$user_profile->save();
         }
 
-       
         if($updated)
                {
                 return response()->json(['statusCode'=>'200','message '=> "User id". ' ' . $request->user_id . ' ' . "is updated"], 200);
