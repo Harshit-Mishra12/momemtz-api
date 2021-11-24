@@ -25,13 +25,33 @@ Route::group([
     // Route::get('/login','App\Http\Controllers\AuthController@getLoginPage' );
     Route::post('/login','App\Http\Controllers\AuthController@login');
     Route::post('/me', 'App\Http\Controllers\AuthController@me');
+    Route::post('/resetPassword','App\Http\Controllers\CustomersController@actionResetPassword');
     Route::get('/signup','App\Http\Controllers\CustomersController@getRegisterPage' );
     Route::post('/customers/register', 'App\Http\Controllers\CustomersController@actionRegister');
     Route::post('/customers/verify-otp', 'App\Http\Controllers\CustomersController@actionVerifyOtp');
     Route::post('/customers/profiles','App\Http\Controllers\CustomersProfileController@actionProfile');
-    Route::get('/categories','App\Http\Controllers\CategoriesController@actionInterestCategory');
+    Route::get('/interestCategories','App\Http\Controllers\CategoriesController@actionInterestCategory');
     Route::post('/customers/interests','App\Http\Controllers\CustomersController@actionCustomerInterest');
-   
+    Route::post('/mailNewPassword','App\Http\Controllers\CustomersController@actionForgetPassword');
+
+    //events api
+    Route::post('/createEvent','App\Http\Controllers\EventsController@createEvent');
+    Route::get('/events/id={customerId}','App\Http\Controllers\EventsController@fetchEvents');
+    Route::post('/events/id={customerId}','App\Http\Controllers\EventsController@updateEvents');
+    Route::get('/fetchAllevents','App\Http\Controllers\EventsController@fetchAllEvents');
+    Route::post('/events/{eventId}/tickets','App\Http\Controllers\EventsController@createEventTicket');
+    Route::get('/events/{eventId}/tickets','App\Http\Controllers\EventsController@fetchEventTicket');
+    Route::post('/events/{eventId}/dress-code','App\Http\Controllers\EventsController@createEventDresscode');
+    Route::get('/events/{eventId}/dress-code','App\Http\Controllers\EventsController@fetchEventDresscode');
+
+    
+    
+    
+    //end events api
+    
+    
+    
+    
 });
 
 // Route::resource('/categories','App\Http\Controllers\CustomersController@getRegisterPage' )->middleware('jwt.auth');

@@ -14,14 +14,14 @@ class AuthController extends Controller
     $this->middleware('auth:api', ['except' => ['login', 'register']]);
    }
 
-
    public function login(Request $request){
     $validator = Validator::make($request->all(), [
-          'email' => 'required|email',
+          'email' => 'required|email', 
+          'phone_number' => 'required', 
           'password' => 'required|string|min:6',
       ]);
     
-      $credentials = $request->only('email', 'password');
+      $credentials = $request->only('email', 'phone_number','password');
       if ($validator->fails()) {
           return response()->json($validator->errors(), 422);
       }
@@ -35,9 +35,6 @@ class AuthController extends Controller
       else{
         return response()->json(['error' => 'Unauthorized'], 401);
       }
-      
-   // return "response()->json(['statusCode'=>'200','message'=>'data is not saved'], 200)";
-    // return $credentials;
      return $this->createNewToken($token);
   }
   public function me(Request $request)
@@ -58,13 +55,5 @@ class AuthController extends Controller
           'user' => auth()->user()
       ]);
   }
-
-
-
-    public function actionLogin(Request $request)
-    {
-      return "hey";
- 
-    }
 
 }

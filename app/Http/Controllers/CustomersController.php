@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\User_profile;
 use App\Models\User_interest;
 use App\Models\User_signup_status;
 use App\models\Verification;
@@ -14,11 +15,13 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Carbon;
 use DateTime;
+use Mail;
 
 class CustomersController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'actionRegister','actionVerifyOtp','actionCustomerInterest']]);
+        $this->middleware('auth:api', ['except' => ['login', 'actionRegister',
+        'actionVerifyOtp','actionCustomerInterest','actionForgetPassword',]]);
        }
     public function getRegisterPage()
     {
@@ -54,9 +57,6 @@ class CustomersController extends Controller
 
             $user = new User();
             $user->email = $request->email;
-            // $user->isOtpVerified = "No";
-            // $user->isProfileComplete = "No";  
-            // $user->isInterestChoosen = "No";
             $user->password = Hash::make($request->password);
             $user->user_type = "customer";
             $user->phone_number = $request->pNumber;
@@ -148,14 +148,6 @@ class CustomersController extends Controller
         WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.isOtpVerified = 'Yes'
         AND user_signup_statuses.isProfileComplete	 = 'Yes' AND      user_signup_statuses.isInterestChoosen = 'Yes'
         ");
-      
-
-        // $isExist = User_signup_status::select("*")
-        // ->where("user_id", $data[0]->id)
-        // ->where("isOtpVerified", "Yes")
-        // ->where("isProfileComplete", "Yes")
-        // ->where("isInterestChoosen", "Yes")
-        // ->exists();
 
         if (empty($data )) {return false;}
         else{return false;}
@@ -281,6 +273,79 @@ class CustomersController extends Controller
             else{
                 return response()->json(['statusCode'=>'400','message'=>'data is not saved'], 400); 
             }
+    }
+    public function actionForgetPassword(Request $request)
+    {
+        $gen_Password = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyzABCDEFGHIJKLMNOPQRSTVWXYZ"), 0, 8);
+        $auth_name='';
+        $isExist = User::select("user_profiles.fullName")
+            ->join('user_profiles', 'user_profiles.user_id', 'users.id')
+            ->where("email", $request->email)
+            ->where("phone_number", $request->phone_number)
+            ->where("isSignupComplete",1)
+            ->get();
+         $auth_name=$isExist[0]['fullName'];
+        //  return response()->json(['data' => $isExist[0]['fullName']]);
+        if (!empty($isExist)) {
+            $email=$request->email;
+            $user = User::where('email', $request->email)
+                ->where('phone_number', $request->phone_number)
+                ->where('isSignupComplete', '1')
+                ->update([
+                    'password' => Hash::make($gen_Password),
+                ]);
+           // dd($request->emailResetPwd);
+            //$data = ['reset_password' => $random_no];
+
+           // Mail::to($request->emailResetPwd)->send(new WelcomeMail($data));
+          $data=['name'=>$auth_name,'password'=>$gen_Password,'data'=>'Please use this credentials as your new password'];
+            
+           $user_data['to']=$request->email;
+           Mail::send('template.mail.sendPasswordTomail',$data,function($messages) use ($user_data,$auth_name){
+            
+              $messages->from('harshitmishra7921@gmail.com','Momentz');
+              $messages->to($user_data['to']);
+              $messages->subject('Support');
+          });
+          // return response()->json(['email_success' => 'yes']);
+            if (empty(Mail::failures())) {
+                return response()->json(['email_success' => 'yes']);
+            } 
+            else {
+                return response()->json(['email_success' => 'no']);
+            }
+        } 
+        else {
+            return response()->json(['error_message' => 'yes']);
+        }
+    }
+
+    public function actionResetPassword(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'auth_user_id' => '|required|',
+            'old_password' => '|required|min:6',
+            'new_password' => '|required|min:6',
+        ]);
+        if(!$validation->passes())
+        {
+            
+            return response()->json(['statusCode'=>'400','validation Error/Inavlid request from the client side' => 'yes'], 400);
+        }
+        $data = User::find($request->auth_user_id);
+     
+        if(Hash::check($request->old_password, $data->password))
+        {
+            $user = User::where('id', $request->auth_user_id)
+                    ->update([
+                        'password' => Hash::make($request->new_password),
+                    ]); 
+            return response()->json(['statusCode'=>'200','data'=>$data], 200);
+        }
+        else
+        {  
+            return response()->json(['statusCode'=>'400','message'=>"old password do not match"], 400);
+        }
         
     }
 }
