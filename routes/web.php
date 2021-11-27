@@ -17,7 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/login','App\Http\Controllers\AuthController@getLoginPage' );
+// Route::post('/login','App\Http\Controllers\AuthController@getLoginPage' )->name('showError');
 // Route::get('/signup','App\Http\Controllers\CustomersController@getRegisterPage' );
 // Route::post('/auth/login', 'App\Http\Controllers\AuthController@actionLogin');
 // Route::post('/customers/register', 'App\Http\Controllers\CustomersController@actionRegister');

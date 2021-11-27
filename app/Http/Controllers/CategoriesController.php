@@ -21,7 +21,12 @@ class CategoriesController extends Controller
         else{
             return response()->json(['statusCode'=>'400','message'=>"No data is returned"], 400); 
         }
-
        
+    }
+    public function getLoginPage()
+    {
+      // return response()->json(['error' => 'Unauthorized'], 401);
+      return "hey";
+       // return view('template.auth.login');
     }
 }
