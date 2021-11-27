@@ -42,11 +42,7 @@ class AuthController extends Controller
         return response()->json(auth()->user());
     }
 
-    public function getLoginPage()
-    {
-
-        return view('template.auth.login');
-    }
+    
     protected function createNewToken($token){
       return response()->json([
           'access_token' => $token,

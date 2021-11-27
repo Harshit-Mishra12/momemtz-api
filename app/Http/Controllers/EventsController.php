@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Ticket;
@@ -100,6 +101,10 @@ class EventsController extends Controller
    }
    public function fetchAllEvents(Request $request)
    {
+            if (!Auth::check()) {
+                return response()->json(['statusCode'=>'401','message'=>"not authoridsed"], 401);
+            }
+        
         $events_data = Event::select("*")
         ->get();
         if(count($events_data) === 0)
@@ -166,7 +171,6 @@ class EventsController extends Controller
    }
    public function createEventDresscode(Request $request,$event_id)
    {
-
     $validation = Validator::make($request->all(), [
         'description' => '|required|',
         'customer_id' =>'|required',
@@ -191,13 +195,10 @@ class EventsController extends Controller
                 return response()->json(['statusCode'=>'200','message'=>"data saved successfully"], 200);  
             }
             else{
-                return response()->json(['statusCode'=>'500','message'=>"data not saved"], 500);   
-            }     
+                return response()->json(['statusCode'=>'500','message'=>"data not saved"], 500);        }     
    }
    public function fetchEventDresscode($event_id)
-   {
-
-            $events_dresscode_data = Dresscode::select("*")
+   {        $events_dresscode_data = Dresscode::select("*")
             ->where("event_id", $event_id)
             ->get();
         
@@ -206,8 +207,8 @@ class EventsController extends Controller
                 
             }
             else{  
-                return response()->json(['statusCode'=>'200','data'=>$events_dresscode_data], 200); 
-            }
-   }
+                return response()->json(['statusCode'=>'200','data'=>$events_dresscode_data], 200);
+                }
+    }
 
 }
