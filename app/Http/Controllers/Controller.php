@@ -12,7 +12,8 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     public function ShowAuthenticationError()
     {
-      return response()->json(['error' => 'Unauthorized'], 401);
+      return response()->json(['error' => 'Unauthorized', "messages"=> "You are not authenticated to perform this action"], 401);
+      
      
     }
 }

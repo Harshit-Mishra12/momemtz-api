@@ -168,14 +168,14 @@ class CustomersController extends Controller
     public function sendOtpAsSms($pNumber,$otp)
     {
         // $data = array('apikey' =>'1zVb3P05JCBEo7sVATXRQAtAxYV', 'to' => $numbers, "sender" => $sender, "message" => $message);
- $data = [
-            'api_key' =>'1zVb3P05JCBEo7sVATXRQAtAxYV',
-            'api_secret' =>'QX41pNQS56vnVAmvppCsEIUIFMVzGcF76BKGFJNk',
-            'text' => $otp,
-            'to' =>'+919305364771',
-            'message'=>'123432',
-            'from' => 'Party App'
-        ];
+        $data = [
+                    'api_key' =>'1zVb3P05JCBEo7sVATXRQAtAxYV',
+                    'api_secret' =>'QX41pNQS56vnVAmvppCsEIUIFMVzGcF76BKGFJNk',
+                    'text' => $otp,
+                    'to' =>'+919305364771',
+                    'message'=>'123432',
+                    'from' => 'Party App'
+                ];
 	// Send the POST request with cURL
         $ch = curl_init('https://api.movider.co/v1/sms');
         curl_setopt($ch, CURLOPT_POST, true);
