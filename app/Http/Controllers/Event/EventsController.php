@@ -24,7 +24,7 @@ class EventsController extends Controller
     $validation = Validator::make($request->all(), [
         'title' => '|required',
         'description' => '|required',
-        'categoryId' => '|required|',
+        'categoryInterestName' => '|required|',
         'eventTypeId' => '|required|',
         'budget' => '|required|',
         'datetime' => '|required|',
@@ -46,7 +46,7 @@ class EventsController extends Controller
             $event->title = $request->title;
             $event->description = $request->description;
             $event->customer_id = $request->customer_id;
-            $event->categoryId = $request->categoryId;
+            $event->categoryInterestName = $request->categoryInterestName;
             $event->eventTypeId = $request->eventTypeId;
             $event->budget = $request->budget;
             $event->datetime = $request->datetime;
@@ -96,7 +96,7 @@ class EventsController extends Controller
             ->update([
                 'title' => $request->title,
                 'description' => $request->description,
-                'categoryId' => $request->categoryId,
+                'categoryInterestName' => $request->categoryInterestName,
                 'budget' => $request->budget,
                 'datetime' => $request->datetime,
                 'locationTitle' => $request->locationTitle,

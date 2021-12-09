@@ -34,6 +34,8 @@ Route::group([
     Route::post('/customers/interests','App\Http\Controllers\CustomersController@actionCustomerInterest');
     Route::post('/mailNewPassword','App\Http\Controllers\CustomersController@actionForgetPassword');
 
+    //vendor profile
+    Route::post('/vendors/profiles','App\Http\Controllers\CustomersProfileController@actionVendorProfile');
     //events api
     Route::post('/createEvent','App\Http\Controllers\Event\EventsController@createEvent');
     Route::get('/events/id={customerId}','App\Http\Controllers\Event\EventsController@fetchEvents');
@@ -66,6 +68,21 @@ Route::group([
     Route::post('/events/{eventId}/wishlist','App\Http\Controllers\Event\EventDashboard\WishlistController@createEventWishList');
     Route::put('/events/{wishlistId}/wishlist','App\Http\Controllers\Event\EventDashboard\WishlistController@updateEventWishlist');
     //end events api 
+
+
+    //explore events
+    Route::get('/exploreCustomerEvents/id={customerId}','App\Http\Controllers\Explore\ExploreEventController@fetchExploreCustomerEvents');
+    Route::get('/exploreNearbyEvents','App\Http\Controllers\Explore\ExploreEventController@fetchExploreNearbyEvents');
+    Route::get('/fetchExploreEventDetails/id={eventId}','App\Http\Controllers\Explore\ExploreEventController@fetchExploreEventDetails');
+   
+    Route::post('/exploreFetchAllEventFilter','App\Http\Controllers\Explore\ExploreEventFilterController@ExploreEventFilter');
+       
+    //vendor product
+    
+    Route::post('/createProduct/id={vendorId}','App\Http\Controllers\Product\ProductController@createProduct');
+    Route::get('/fetchProduct/id={vendorId}','App\Http\Controllers\Product\ProductController@fetchProduct');
+    Route::get('/fetchOrder/id={vendorId}','App\Http\Controllers\Product\ProductController@fetchOrder');
+    
 });
 Route::get('/errorMessagePage','App\Http\Controllers\Controller@ShowAuthenticationError')->name('login');
 // Route::post('/login','App\Http\Controllers\AuthController@login');

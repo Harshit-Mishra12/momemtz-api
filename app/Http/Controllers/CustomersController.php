@@ -59,7 +59,7 @@ class CustomersController extends Controller
             $user = new User();
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
-            $user->user_type = "customer";
+            $user->user_type = $request->userType;
             $user->phone_number = $request->pNumber;
             $user->country_code = $request->countryCode;
             $user->date = $request->date;
@@ -172,7 +172,7 @@ class CustomersController extends Controller
                     'api_key' =>'1zVb3P05JCBEo7sVATXRQAtAxYV',
                     'api_secret' =>'QX41pNQS56vnVAmvppCsEIUIFMVzGcF76BKGFJNk',
                     'text' => $otp,
-                    'to' =>'+919305364771',
+                    'to' =>$pNumber,
                     'message'=>'123432',
                     'from' => 'Party App'
                 ];
