@@ -37,21 +37,24 @@ Route::group([
     //vendor profile
     Route::post('/vendors/profiles','App\Http\Controllers\CustomersProfileController@actionVendorProfile');
     //events api
-    Route::post('/createEvent','App\Http\Controllers\Event\EventsController@createEvent');
-    Route::get('/events/id={customerId}','App\Http\Controllers\Event\EventsController@fetchEvents');
-    Route::put('/events/id={eventId}','App\Http\Controllers\Event\EventsController@updateEvents');
-    Route::get('/fetchAllevents','App\Http\Controllers\Event\EventsController@fetchAllEvents');
-    Route::post('/publishEvent/id={eventId}','App\Http\Controllers\Event\EventsController@actionPublishEvent');
+    Route::post('/events','App\Http\Controllers\Event\EventsController@createEvent');
+    Route::get('/customers/{customerId}/events','App\Http\Controllers\Event\EventsController@fetchEvents');
+    Route::put('/events/{eventId}','App\Http\Controllers\Event\EventsController@updateEvents');
+    Route::get('/events','App\Http\Controllers\Event\EventsController@fetchAllEvents');
+    Route::post('events/{eventId}/publish','App\Http\Controllers\Event\EventsController@actionPublishEvent');
     
-    // delete event api
-    Route::delete('/deleteAnEvent/id={eventId}','App\Http\Controllers\Event\EventsController@deleteAnEvent');
 
+    // delete event api
+    Route::delete('/events/{eventId}','App\Http\Controllers\Event\EventsController@deleteAnEvent');
+    
     //fetch events
-    Route::get('/fetchAllActiveEvents','App\Http\Controllers\Event\EventsController@fetchAllActiveEvent');
-    Route::get('/fetchActiveEvents/id={customerId}','App\Http\Controllers\Event\EventsController@fetchActiveEvent');
-    Route::get('/fetchUpcomingEvents','App\Http\Controllers\Event\EventsController@fetchUpcomingEvent');
-    Route::get('/fetchCompletedEvent/id={customerId}','App\Http\Controllers\Event\EventsController@fetchCompletedEvent');
-    Route::get('/fetchUnpublishEvent/id={customerId}','App\Http\Controllers\Event\EventsController@fetchUnpublishEvent');
+    Route::get('/active-events','App\Http\Controllers\Event\EventsController@fetchAllActiveEvent');
+    Route::get('/customers/{customerId}/active-events','App\Http\Controllers\Event\EventsController@fetchActiveEvent');
+
+    
+    Route::get('/upcoming-events','App\Http\Controllers\Event\EventsController@fetchUpcomingEvent');
+    Route::get('/customers/{customerId}/completed-events','App\Http\Controllers\Event\EventsController@fetchCompletedEvent');
+    Route::get('/customers/{customerId}/unpublished-events','App\Http\Controllers\Event\EventsController@fetchUnpublishEvent');
     
     
     //event ticket api
@@ -60,8 +63,8 @@ Route::group([
     Route::put('/events/{ticketId}/tickets','App\Http\Controllers\Event\EventDashboard\TicketController@updateEventTicket');
     
     //event dreescode api
-    Route::post('/events/{eventId}/dress-code','App\Http\Controllers\Event\EventDashboard\DressCodeController@createEventDresscode');
-    Route::get('/events/{eventId}/dress-code','App\Http\Controllers\Event\EventDashboard\DressCodeController@fetchEventDresscode');
+    Route::post('/events/{eventId}/dress-codes','App\Http\Controllers\Event\EventDashboard\DressCodeController@createEventDresscode');
+    Route::get('/events/{eventId}/dress-codes','App\Http\Controllers\Event\EventDashboard\DressCodeController@fetchEventDresscode');
     
     //event wishlist api
     Route::get('/events/{eventId}/wishlist','App\Http\Controllers\Event\EventDashboard\WishlistController@fetchEventWishlist');
@@ -71,7 +74,9 @@ Route::group([
 
 
     //explore events
-    Route::get('/exploreCustomerEvents/id={customerId}','App\Http\Controllers\Explore\ExploreEventController@fetchExploreCustomerEvents');
+   
+    Route::get('/customers/{customerId}/explore-events','App\Http\Controllers\Explore\ExploreEventController@fetchExploreCustomerEvents');
+    
     Route::get('/exploreNearbyEvents','App\Http\Controllers\Explore\ExploreEventController@fetchExploreNearbyEvents');
     Route::get('/fetchExploreEventDetails/id={eventId}','App\Http\Controllers\Explore\ExploreEventController@fetchExploreEventDetails');
    
@@ -79,31 +84,22 @@ Route::group([
        
     //vendor product
     
-    Route::post('/createProduct/id={vendorId}','App\Http\Controllers\Product\ProductController@createProduct');
-    Route::get('/fetchProduct/id={vendorId}','App\Http\Controllers\Product\ProductController@fetchProduct');
-    Route::get('/fetchOrder/id={vendorId}','App\Http\Controllers\Product\ProductController@fetchOrder');
+    // Route::post('/createProduct/id={vendorId}','App\Http\Controllers\Vendor\ProductController@createProduct');
+
+      //create product for specific vendor
+    Route::post('/vendors/{vendorId}/products','App\Http\Controllers\Vendor\ProductController@createProduct');
+
+
+     //fetch product for specific vendor
+    Route::get('/vendors/{vendorId}/products','App\Http\Controllers\Vendor\ProductController@fetchProduct');
+    //fetch order for specific vendor
+    Route::get('/vendors/{vendorId}/orders','App\Http\Controllers\Vendor\ProductController@fetchOrder');
+    Route::get('/vendors','App\Http\Controllers\Vendor\CustomerVendorController@fetchVendors');
+    
+    //fetch a product detail
+    Route::get('/products/{productId}/detail','App\Http\Controllers\Vendor\CustomerVendorController@fetchProductDetail');
+    
+    
     
 });
 Route::get('/errorMessagePage','App\Http\Controllers\Controller@ShowAuthenticationError')->name('login');
-// Route::post('/login','App\Http\Controllers\AuthController@login');
-// Route::post('/me', 'App\Http\Controllers\AuthController@me');
-// Route::post('/resetPassword','App\Http\Controllers\CustomersController@actionResetPassword');
-// Route::get('/signup','App\Http\Controllers\CustomersController@getRegisterPage' );
-// Route::post('/customers/register', 'App\Http\Controllers\CustomersController@actionRegister');
-// Route::post('/customers/verify-otp', 'App\Http\Controllers\CustomersController@actionVerifyOtp');
-// Route::post('/customers/profiles','App\Http\Controllers\CustomersProfileController@actionProfile');
-// Route::get('/interestCategories','App\Http\Controllers\CategoriesController@actionInterestCategory');
-// Route::post('/customers/interests','App\Http\Controllers\CustomersController@actionCustomerInterest');
-// Route::post('/mailNewPassword','App\Http\Controllers\CustomersController@actionForgetPassword');
-
-// //events api
-// Route::post('/createEvent','App\Http\Controllers\EventsController@createEvent');
-// Route::get('/events/id={customerId}','App\Http\Controllers\EventsController@fetchEvents');
-// Route::post('/events/id={customerId}','App\Http\Controllers\EventsController@updateEvents');
-// Route::get('/fetchAllevents','App\Http\Controllers\EventsController@fetchAllEvents');
-// Route::post('/events/{eventId}/tickets','App\Http\Controllers\EventsController@createEventTicket');
-// Route::get('/events/{eventId}/tickets','App\Http\Controllers\EventsController@fetchEventTicket');
-// Route::post('/events/{eventId}/dress-code','App\Http\Controllers\EventsController@createEventDresscode');
-// Route::get('/events/{eventId}/dress-code','App\Http\Controllers\EventsController@fetchEventDresscode');
-
-// Route::resource('/categories','App\Http\Controllers\CustomersController@getRegisterPage' )->middleware('jwt.auth');

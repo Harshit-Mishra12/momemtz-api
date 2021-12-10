@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Product;
+namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -43,10 +43,17 @@ class ProductController extends Controller
 
        public function fetchProduct($vendorId) {
 
-        $products_data = Product::select("*")
+        $products = Product::select("*")
         ->where("user_id", $vendorId)
-        ->get(); 
-        return response()->json(['statusCode'=>'200','data'=>$products_data], 200); 
+        ->get();
+
+            if(count($products)==0)
+            {
+                return response()->json(['statusCode'=>'404','message'=>'No product found'], 404); 
+            }
+            else{
+                return response()->json(['statusCode'=>'200','data'=>$products], 200); 
+            }
        }
 
        public function fetchOrder($vendorId) {

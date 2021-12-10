@@ -82,7 +82,7 @@ class EventsController extends Controller
             ->get();
         
             if(count($events_data) === 0)
-            { return response()->json(['statusCode'=>'400','message'=>"Not found"], 400);
+            { return response()->json(['statusCode'=>'404','message'=>"Not found"], 404);
                 
             }
             else{  
@@ -162,7 +162,7 @@ class EventsController extends Controller
             ->get();
         
             if(count($active_event) === 0)
-            { return response()->json(['statusCode'=>'400','message'=>"Not found"], 400);
+            { return response()->json(['statusCode'=>'404','message'=>"Not found"], 404);
                 
             }
             else{  
@@ -170,7 +170,7 @@ class EventsController extends Controller
             }
    }
    public function fetchAllActiveEvent()
-   {
+   {        $today_date = Carbon\Carbon::now();
             $active_event = Event::select("*")
             ->where("isActive",1)
             ->whereDate('datetime', '>',$today_date)
@@ -197,7 +197,7 @@ class EventsController extends Controller
 
         
             if(count($active_event) === 0)
-            { return response()->json(['statusCode'=>'400','message'=>"Not found"], 400);
+            { return response()->json(['statusCode'=>'404','message'=>"Not found"], 404);
                 
             }
             else{  
@@ -247,7 +247,7 @@ class EventsController extends Controller
             }
     }
     public function deleteAnEvent($event_id)
-    {
+    {  // isActive 2 means its deleted
 
         $updated = Event::where("id", $event_id)
         ->update([
@@ -255,11 +255,11 @@ class EventsController extends Controller
         ]);
 
         if(!$updated)
-            { return response()->json(['statusCode'=>'400','message'=>"Not updated"], 400);
+            { return response()->json(['statusCode'=>'400','message'=>"Not deleted"], 400);
                 
             }
             else{  
-                return response()->json(['statusCode'=>'200','data'=>"sucessfully updated"], 200); 
+                return response()->json(['statusCode'=>'200','data'=>"sucessfully deleted"], 200); 
             }
     }
 
