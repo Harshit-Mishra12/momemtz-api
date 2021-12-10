@@ -10,7 +10,7 @@ use App\Models\Dresscode;
 use Validator;
 
 
-class EventsController extends Controller
+class Events_Controller extends Controller
 {
     public function __construct() {
         $this->middleware('auth:api', ['except' => [ ]]);
