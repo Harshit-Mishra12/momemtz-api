@@ -22,7 +22,7 @@ class ExploreEventFilterController extends Controller
             $category=$request->categoryInterestName;
             $my_lat=$request->locationLat; 
             $my_lng=$request->locationLon;
-
+            $sortby_option=$request->sortby_option;
             $dist=$request->distance; 
             
             $dresscodeStatus=$request->dresscodeStatus;
@@ -44,14 +44,14 @@ class ExploreEventFilterController extends Controller
            }
             $today_date = Carbon\Carbon::now();
             $ids = implode(',', $arr);
-            $events_data =DB::select("SELECT dest.id,dest.categoryInterestName,event_dashboard_statuses.dresscode, dest.locationLat, dest.locationLon,  3956 * 2 * ASIN(SQRT(POWER(SIN(($my_lat -abs(dest.locationLat)) * pi()/180 / 2),2) + COS($my_lat * pi()/180 ) * COS(abs(dest.locationLat) *  pi()/180) * POWER(SIN(($my_lng - abs(dest.locationLon)) *  pi()/180 / 2), 2))
+            $events_data =DB::select("SELECT dest.title, dest.id,dest.categoryInterestName,event_dashboard_statuses.dresscode, dest.locationLat, dest.locationLon,  3956 * 2 * ASIN(SQRT(POWER(SIN(($my_lat -abs(dest.locationLat)) * pi()/180 / 2),2) + COS($my_lat * pi()/180 ) * COS(abs(dest.locationLat) *  pi()/180) * POWER(SIN(($my_lng - abs(dest.locationLon)) *  pi()/180 / 2), 2))
             ) as distance
             FROM (events as dest
             INNER JOIN event_dashboard_statuses ON event_dashboard_statuses.event_id = dest.id) 
             WHERE  event_dashboard_statuses.dresscode = $dresscodeStatus   AND dest.isActive = '1'
             AND  dest.categoryInterestName= '$category'  AND  dest.id IN ($ids) AND dest.datetime >= '$today_date'
             having distance >= 0 and distance < $dist
-            ORDER BY datetime limit 10;
+            ORDER BY $sortby_option limit 10;
             ");
 
         // $events_data = Event::select('events.id', 'categoryInterestName','event_dashboard_statuses.dresscode','events.locationLon','events.locationLon','3956 * 2 * ASIN(SQRT(POWER(SIN(($my_lat -abs(dest.locationLat)) * pi()/180 / 2),2) + COS($my_lat * pi()/180 ) * COS(abs(dest.locationLat) *  pi()/180) * POWER(SIN(($my_lng - abs(dest.locationLon)) *  pi()/180 / 2), 2)))')
