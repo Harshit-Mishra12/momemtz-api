@@ -25,7 +25,7 @@ class CustomersProfileController extends Controller
             'fullname' => '|required|',
             'locationCity' => '|required|',
             'locationCountry' => '|required|',
-            'profile_image' => 'required|mimes:jpeg,jpg,png|max:5000'
+            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
         ]);
         if(!$validation->passes())
         {
@@ -36,10 +36,10 @@ class CustomersProfileController extends Controller
                 if (!File::exists($path)) {
                     File::makeDirectory($path, $mode = 0777, true, true);
                 }
-                $extension = $request->file('profile_image')->getClientOriginalExtension();
+                $extension = $request->file('profile_image_url')->getClientOriginalExtension();
                 $filename = str_replace(" ","_", $request->fullname);
                 $fileNameToStore = $filename . '_' . $request->user_id . '.' . $extension;
-                $request->file('profile_image')->move(public_path('uploads/User_Documents'), $fileNameToStore);
+                $request->file('profile_image_url')->move(public_path('uploads/User_Documents'), $fileNameToStore);
 
         $isExist = User::select("*")
             ->where("id", $request->user_id)
@@ -58,7 +58,7 @@ class CustomersProfileController extends Controller
                 'fullname' => $request->fullname,
                 'locationCity'=>$request->locationCity,
                 'locationCountry'=>$request->locationCountry,
-                'profile_image'=>$fileNameToStore
+                'profile_image_url'=>$fileNameToStore
             ]);
             return response()->json(['statusCode'=>'200','message'=>'data is updated'], 200); 
         }
@@ -74,7 +74,7 @@ class CustomersProfileController extends Controller
             $user_profile->fullname = $request->fullname;
             $user_profile->locationCity = $request->locationCity;
             $user_profile->locationCountry = $request->locationCountry;
-            $user_profile->profile_image= $fileNameToStore;
+            $user_profile->profile_image_url= $fileNameToStore;
             $saved=$user_profile->save();
                 
         }
@@ -99,7 +99,7 @@ class CustomersProfileController extends Controller
         $validation = Validator::make($request->all(), [
             'businessName' => '|required|',
             'location' => '|required|',
-            'profile_image' => 'required|mimes:jpeg,jpg,png|max:5000'
+            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
         ]);
         if(!$validation->passes())
         {
@@ -110,10 +110,10 @@ class CustomersProfileController extends Controller
                 if (!File::exists($path)) {
                     File::makeDirectory($path, $mode = 0777, true, true);
                 }
-                $extension = $request->file('profile_image')->getClientOriginalExtension();
+                $extension = $request->file('profile_image_url')->getClientOriginalExtension();
                 $filename = str_replace(" ","_", $request->fullname);
                 $fileNameToStore = $filename . '_' . $request->user_id . '.' . $extension;
-                $request->file('profile_image')->move(public_path('uploads/User_Documents'), $fileNameToStore);
+                $request->file('profile_image_url')->move(public_path('uploads/User_Documents'), $fileNameToStore);
 
         $isExist = User::select("*")
             ->where("id", $request->user_id)
@@ -131,7 +131,7 @@ class CustomersProfileController extends Controller
             ->update([
                 'businessName' => $request->businessName,
                 'location'=>$request->location,
-                'profile_image'=>$fileNameToStore
+                'profile_image_url'=>$fileNameToStore
             ]);
             return response()->json(['statusCode'=>'200','message'=>'data is updated'], 200); 
         }
@@ -160,7 +160,7 @@ class CustomersProfileController extends Controller
             $vendor_profile->user_id = $request->user_id;
             $vendor_profile->businessName = $request->businessName;
             $vendor_profile->location = $request->location;
-            $vendor_profile->profile_image= $fileNameToStore;
+            $vendor_profile->profile_image_url= $fileNameToStore;
             $saved=$vendor_profile->save();
                 
         }

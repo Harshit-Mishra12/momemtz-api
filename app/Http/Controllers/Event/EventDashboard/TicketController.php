@@ -42,7 +42,7 @@ class TicketController extends Controller
             $ticket = new Ticket();
             $ticket->name = $request->name;
             $ticket->description = $request->description;
-            $ticket->customer_id = $request->customer_id;
+            // $ticket->customer_id = $request->customer_id;
             $ticket->event_id =$event_id;
             $ticket->stock = $request->stock;
             $ticket->price = $request->price;

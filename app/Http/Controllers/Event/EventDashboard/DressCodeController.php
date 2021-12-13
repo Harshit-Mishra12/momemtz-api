@@ -40,7 +40,7 @@ class DressCodeController extends Controller
             $dresscode->dressCodeCategoryId = $request->dressCodeCategoryId;
             $dresscode->colorOne = $request->colorOne;
             $dresscode->colorTwo = $request->colorTwo;
-            $dresscode->customer_id = $request->customer_id;
+            // $dresscode->customer_id = $request->customer_id;
             $dresscode->event_id = $event_id;
             $saved=$dresscode->save();
 

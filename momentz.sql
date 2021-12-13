@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 11, 2021 at 11:59 AM
+-- Generation Time: Dec 13, 2021 at 01:08 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -56,7 +56,6 @@ INSERT INTO `customer_products` (`id`, `order_id`, `product_id`, `customer_id`, 
 CREATE TABLE `dresscodes` (
   `id` int(10) NOT NULL,
   `description` text NOT NULL,
-  `customer_id` int(10) NOT NULL,
   `event_id` int(10) NOT NULL,
   `dressCodeCategoryId` int(10) NOT NULL,
   `colorOne` text NOT NULL,
@@ -69,13 +68,13 @@ CREATE TABLE `dresscodes` (
 -- Dumping data for table `dresscodes`
 --
 
-INSERT INTO `dresscodes` (`id`, `description`, `customer_id`, `event_id`, `dressCodeCategoryId`, `colorOne`, `colorTwo`, `created_at`, `updated_at`) VALUES
-(1, 'this is game for friends and family', 63, 4, 2, 'red', 'blue', '2021-11-23 14:40:22', '2021-11-23 14:40:22'),
-(2, 'this is game for friends and family', 63, 5, 499, 'red', 'blue', '2021-11-24 02:27:52', '2021-11-24 02:27:52'),
-(3, 'this is game for friends and family', 63, 4, 3, 'red', 'blue', '2021-11-30 02:03:09', '2021-11-30 02:03:09'),
-(4, 'this is game for friends and family', 63, 4, 3, 'red', 'blue', '2021-11-30 02:03:18', '2021-11-30 02:03:18'),
-(5, 'this is game for friends and family', 63, 10, 3, 'red', 'blue', '2021-11-30 04:49:06', '2021-11-30 04:49:06'),
-(6, 'this is game for friends and family', 63, 10, 3, 'red', 'blue', '2021-12-10 03:43:50', '2021-12-10 03:43:50');
+INSERT INTO `dresscodes` (`id`, `description`, `event_id`, `dressCodeCategoryId`, `colorOne`, `colorTwo`, `created_at`, `updated_at`) VALUES
+(1, 'this is game for friends and family', 4, 2, 'red', 'blue', '2021-11-23 14:40:22', '2021-11-23 14:40:22'),
+(2, 'this is game for friends and family', 5, 499, 'red', 'blue', '2021-11-24 02:27:52', '2021-11-24 02:27:52'),
+(3, 'this is game for friends and family', 4, 3, 'red', 'blue', '2021-11-30 02:03:09', '2021-11-30 02:03:09'),
+(4, 'this is game for friends and family', 4, 3, 'red', 'blue', '2021-11-30 02:03:18', '2021-11-30 02:03:18'),
+(5, 'this is game for friends and family', 10, 3, 'red', 'blue', '2021-11-30 04:49:06', '2021-11-30 04:49:06'),
+(6, 'this is game for friends and family', 10, 3, 'red', 'blue', '2021-12-10 03:43:50', '2021-12-10 03:43:50');
 
 -- --------------------------------------------------------
 
@@ -217,7 +216,6 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 CREATE TABLE `orders` (
   `id` int(10) NOT NULL,
-  `customer_id` int(10) NOT NULL,
   `vendor_id` int(10) NOT NULL,
   `event_id` int(10) NOT NULL,
   `total_quantity` int(10) NOT NULL,
@@ -230,9 +228,9 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `customer_id`, `vendor_id`, `event_id`, `total_quantity`, `total_price`, `created_at`, `updated_at`) VALUES
-(10, 63, 69, 10, 8, 700, '2021-12-08 18:53:34', '2021-12-08 18:53:34'),
-(11, 63, 69, 10, 2, 100, '2021-12-08 19:04:59', '2021-12-08 19:04:59');
+INSERT INTO `orders` (`id`, `vendor_id`, `event_id`, `total_quantity`, `total_price`, `created_at`, `updated_at`) VALUES
+(10, 69, 10, 8, 700, '2021-12-08 18:53:34', '2021-12-08 18:53:34'),
+(11, 69, 10, 2, 100, '2021-12-08 19:04:59', '2021-12-08 19:04:59');
 
 -- --------------------------------------------------------
 
@@ -314,7 +312,6 @@ CREATE TABLE `tickets` (
   `id` int(10) NOT NULL,
   `name` text NOT NULL,
   `description` text NOT NULL,
-  `customer_id` int(10) NOT NULL,
   `event_id` int(10) NOT NULL,
   `stock` int(10) NOT NULL,
   `price` int(20) NOT NULL,
@@ -326,14 +323,14 @@ CREATE TABLE `tickets` (
 -- Dumping data for table `tickets`
 --
 
-INSERT INTO `tickets` (`id`, `name`, `description`, `customer_id`, `event_id`, `stock`, `price`, `created_at`, `updated_at`) VALUES
-(1, 'carrom game', 'this is game for friends and family', 63, 1, 499, 150, '2021-11-23 13:49:50', '2021-11-23 13:49:50'),
-(2, '1st ticket name', 'this is game for friends and family', 63, 5, 499, 100, '2021-11-23 14:26:35', '2021-11-23 14:26:35'),
-(3, '2nd ticket name', 'this is game for friends and family', 63, 5, 299, 200, '2021-11-24 02:23:38', '2021-11-24 02:23:38'),
-(4, '3rd ticket name', 'this is game for friends and family', 63, 5, 199, 300, '2021-11-30 01:58:05', '2021-11-30 01:58:05'),
-(5, '4th ticket name', 'this is ticket', 63, 10, 399, 180, '2021-11-30 04:42:12', '2021-11-30 04:42:12'),
-(6, '5th ticket name', 'this is ticket', 63, 10, 399, 60000, '2021-11-30 04:43:39', '2021-11-30 04:43:39'),
-(7, 'vip dictrate pavillain', 'this is ticket', 63, 10, 389, 69000, '2021-11-30 04:45:15', '2021-12-02 02:33:08');
+INSERT INTO `tickets` (`id`, `name`, `description`, `event_id`, `stock`, `price`, `created_at`, `updated_at`) VALUES
+(1, 'carrom game', 'this is game for friends and family', 1, 499, 150, '2021-11-23 13:49:50', '2021-11-23 13:49:50'),
+(2, '1st ticket name', 'this is game for friends and family', 5, 499, 100, '2021-11-23 14:26:35', '2021-11-23 14:26:35'),
+(3, '2nd ticket name', 'this is game for friends and family', 5, 299, 200, '2021-11-24 02:23:38', '2021-11-24 02:23:38'),
+(4, '3rd ticket name', 'this is game for friends and family', 5, 199, 300, '2021-11-30 01:58:05', '2021-11-30 01:58:05'),
+(5, '4th ticket name', 'this is ticket', 10, 399, 180, '2021-11-30 04:42:12', '2021-11-30 04:42:12'),
+(6, '5th ticket name', 'this is ticket', 10, 399, 60000, '2021-11-30 04:43:39', '2021-11-30 04:43:39'),
+(7, 'vip dictrate pavillain', 'this is ticket', 10, 389, 69000, '2021-11-30 04:45:15', '2021-12-02 02:33:08');
 
 -- --------------------------------------------------------
 
@@ -408,7 +405,7 @@ CREATE TABLE `user_profiles` (
   `fullName` text NOT NULL,
   `locationCity` varchar(20) NOT NULL,
   `locationCountry` varchar(20) NOT NULL,
-  `profile_image` varchar(255) DEFAULT NULL,
+  `profile_image_url` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -417,7 +414,7 @@ CREATE TABLE `user_profiles` (
 -- Dumping data for table `user_profiles`
 --
 
-INSERT INTO `user_profiles` (`id`, `user_id`, `fullName`, `locationCity`, `locationCountry`, `profile_image`, `created_at`, `updated_at`) VALUES
+INSERT INTO `user_profiles` (`id`, `user_id`, `fullName`, `locationCity`, `locationCountry`, `profile_image_url`, `created_at`, `updated_at`) VALUES
 (14, 62, 'Harshit Mishra', 'kanpur', 'india', 'Harshit_Mishra_62.PNG', '2021-11-18 07:36:44', '2021-11-18 07:39:33'),
 (15, 63, 'steve smith', 'canberra', 'Australia', 'steve_smith_63.PNG', '2021-11-20 09:22:44', '2021-11-20 09:22:44'),
 (17, 64, 'john calamer', 'cape town', 'South Africa', 'john_calamer_64.PNG', '2021-12-08 01:01:57', '2021-12-08 01:01:57'),
@@ -465,7 +462,7 @@ CREATE TABLE `vendor_profiles` (
   `user_id` int(10) NOT NULL COMMENT 'i.e vendor_id',
   `businessName` text NOT NULL,
   `location` varchar(100) NOT NULL,
-  `profile_image` varchar(255) NOT NULL,
+  `profile_image_url` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -474,7 +471,7 @@ CREATE TABLE `vendor_profiles` (
 -- Dumping data for table `vendor_profiles`
 --
 
-INSERT INTO `vendor_profiles` (`id`, `user_id`, `businessName`, `location`, `profile_image`, `created_at`, `updated_at`) VALUES
+INSERT INTO `vendor_profiles` (`id`, `user_id`, `businessName`, `location`, `profile_image_url`, `created_at`, `updated_at`) VALUES
 (2, 69, 'Seoul Pot', 'lagos,nigeria', '_69.PNG', '2021-12-08 02:12:06', '2021-12-08 02:12:06');
 
 -- --------------------------------------------------------
