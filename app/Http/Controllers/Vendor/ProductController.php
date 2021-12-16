@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Product;  
-use App\Models\Customer_product; 
+use App\Models\Order_item; 
+
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -17,7 +18,7 @@ class ProductController extends Controller
 
        public function createProduct(Request $request) {
         $isExist = Product::select("*")
-            ->where("ProductName", $request->ProductName)
+            ->where("product_name", $request->product_name)
             ->exists();
 
         if($isExist)
@@ -28,9 +29,9 @@ class ProductController extends Controller
 
         $product = new Product();
         $product->user_id = $request->user_id;
-        $product->ProductName = $request->ProductName;
+        $product->product_name = $request->product_name;
         $product->location = $request->location;
-        $product->pricePerQuantity = $request->pricePerQuantity;
+        $product->price_per_quantity = $request->price_per_quantity;
         $product->description = $request->description;        
         $saved=$product->save();
 
@@ -58,11 +59,11 @@ class ProductController extends Controller
 
        public function fetchOrder($vendorId) {
         $orders_data =DB::select("SELECT *
-        FROM ((customer_products
-        INNER JOIN orders ON orders.id = customer_products.order_id)
-        INNER JOIN products ON products.id = customer_products.product_id)
+        FROM ((Order_items
+        INNER JOIN orders ON orders.id = Order_items.order_id)
+        INNER JOIN products ON products.id = Order_items.product_id)
         WHERE orders.vendor_id=$vendorId
-        ORDER BY customer_products.order_id
+        ORDER BY Order_items.order_id
         ");
         return response()->json(['statusCode'=>'200','data'=>$orders_data], 200); 
        }

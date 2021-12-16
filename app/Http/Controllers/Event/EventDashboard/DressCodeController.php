@@ -27,9 +27,9 @@ class DressCodeController extends Controller
     $validation = Validator::make($request->all(), [
         'description' => '|required|',
         'customer_id' =>'|required',
-        'dressCodeCategoryId' => '|required',
-        'colorOne' => '|required',
-        'colorTwo' => '|required|',
+        'dress_code_category_id' => '|required',
+        'color_one' => '|required',
+        'color_two' => '|required|',
     ]);
     if(!$validation->passes())
     {
@@ -37,10 +37,10 @@ class DressCodeController extends Controller
     }
             $dresscode = new Dresscode();
             $dresscode->description = $request->description;
-            $dresscode->dressCodeCategoryId = $request->dressCodeCategoryId;
-            $dresscode->colorOne = $request->colorOne;
-            $dresscode->colorTwo = $request->colorTwo;
-            $dresscode->customer_id = $request->customer_id;
+            $dresscode->dress_code_category_id	 = $request->dress_code_category_id	;
+            $dresscode->color_one = $request->color_one;
+            $dresscode->color_two = $request->color_two;
+            // $dresscode->customer_id = $request->customer_id;
             $dresscode->event_id = $event_id;
             $saved=$dresscode->save();
 

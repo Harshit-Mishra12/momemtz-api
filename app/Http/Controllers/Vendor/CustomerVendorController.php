@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Product;  
-use App\Models\Customer_product;  
 use App\Models\Vendor_profile;  
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +21,7 @@ class CustomerVendorController extends Controller
             $vendors_data =DB::select("SELECT *
             FROM (users
             INNER JOIN vendor_profiles ON vendor_profiles.user_id = users.id)
-            WHERE users.isSignupComplete='1'
+            WHERE users.is_Signup_Complete='1'
             ");
 
             return response()->json(['statusCode'=>'200','data'=>$vendors_data], 200); 
