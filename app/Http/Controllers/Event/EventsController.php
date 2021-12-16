@@ -24,13 +24,13 @@ class EventsController extends Controller
     $validation = Validator::make($request->all(), [
         'title' => '|required',
         'description' => '|required',
-        'categoryInterestName' => '|required|',
-        'eventTypeId' => '|required|',
+        'category_interest_name' => '|required|',
+        'event_type_id' => '|required|',
         'budget' => '|required|',
         'datetime' => '|required|',
-        'locationTitle' => '|required|',
-        'locationLon' => '|required|',
-        'locationLat' => '|required|'
+        'location_title' => '|required|',
+        'location_lon' => '|required|',
+        'location_lat' => '|required|'
     ]);
     if(!$validation->passes())
     {
@@ -46,13 +46,13 @@ class EventsController extends Controller
             $event->title = $request->title;
             $event->description = $request->description;
             $event->customer_id = $request->customer_id;
-            $event->categoryInterestName = $request->categoryInterestName;
-            $event->eventTypeId = $request->eventTypeId;
+            $event->category_interest_name = $request->category_interest_name;
+            $event->event_type_id = $request->event_type_id;
             $event->budget = $request->budget;
             $event->datetime = $request->datetime;
-            $event->locationTitle = $request->locationTitle;
-            $event->locationLon = $request->locationLon;
-            $event->locationLat = $request->locationLat;
+            $event->location_title = $request->location_title;
+            $event->location_lon = $request->location_lon;
+            $event->location_lat = $request->location_lat;
             $event->save();
 
             $event_dashboard_status = new Event_dashboard_status();
@@ -96,12 +96,12 @@ class EventsController extends Controller
             ->update([
                 'title' => $request->title,
                 'description' => $request->description,
-                'categoryInterestName' => $request->categoryInterestName,
+                'category_interest_name' => $request->category_interest_name,
                 'budget' => $request->budget,
                 'datetime' => $request->datetime,
-                'locationTitle' => $request->locationTitle,
-                'locationLon' => $request->locationLon,
-                'locationLat' => $request->locationLat,
+                'location_title' => $request->location_title,
+                'location_lon' => $request->location_lon,
+                'location_lat' => $request->location_lat,
             ]);
         
             if(!$updated)

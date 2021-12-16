@@ -29,7 +29,7 @@ class AuthController extends Controller
           , 400); 
       }
      
-      if( auth()->attempt($credentials) && auth()->user()->isSignupComplete == '1')
+      if( auth()->attempt($credentials) && auth()->user()->is_Signup_Complete == '1')
       {
         if (! $token = auth()->attempt($credentials)) {
           return response()->json(['error' => 'Unauthorized', "messages"=> "You are not authenticated to perform this action"], 401);

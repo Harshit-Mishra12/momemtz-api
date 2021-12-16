@@ -22,9 +22,9 @@ class CustomersProfileController extends Controller
         
         $fileNameToStore = '';
         $validation = Validator::make($request->all(), [
-            'fullname' => '|required|',
-            'locationCity' => '|required|',
-            'locationCountry' => '|required|',
+            'full_name' => '|required|',
+            'location_city' => '|required|',
+            'location_country' => '|required|',
             'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
         ]);
         if(!$validation->passes())
@@ -37,7 +37,7 @@ class CustomersProfileController extends Controller
                     File::makeDirectory($path, $mode = 0777, true, true);
                 }
                 $extension = $request->file('profile_image_url')->getClientOriginalExtension();
-                $filename = str_replace(" ","_", $request->fullname);
+                $filename = str_replace(" ","_", $request->full_name);
                 $fileNameToStore = $filename . '_' . $request->user_id . '.' . $extension;
                 $request->file('profile_image_url')->move(public_path('uploads/User_Documents'), $fileNameToStore);
 
@@ -55,9 +55,9 @@ class CustomersProfileController extends Controller
         {
             $updated = User_profile::where('user_id', $request->user_id)
             ->update([
-                'fullname' => $request->fullname,
-                'locationCity'=>$request->locationCity,
-                'locationCountry'=>$request->locationCountry,
+                'full_name' => $request->full_name,
+                'location_city'=>$request->location_city,
+                'location_country'=>$request->location_country,
                 'profile_image_url'=>$fileNameToStore
             ]);
             return response()->json(['statusCode'=>'200','message'=>'data is updated'], 200); 
@@ -65,15 +65,15 @@ class CustomersProfileController extends Controller
         else{
             $user = User_signup_status::where('user_id', $request->user_id)
             ->update([
-                'isProfileComplete' => "Yes",
+                'is_profile_complete' => "Yes",
             ]);
 
 
             $user_profile = new User_profile();
             $user_profile->user_id = $request->user_id;
-            $user_profile->fullname = $request->fullname;
-            $user_profile->locationCity = $request->locationCity;
-            $user_profile->locationCountry = $request->locationCountry;
+            $user_profile->full_name = $request->full_name;
+            $user_profile->location_city = $request->location_city;
+            $user_profile->location_country = $request->location_country;
             $user_profile->profile_image_url= $fileNameToStore;
             $saved=$user_profile->save();
                 
@@ -97,7 +97,7 @@ class CustomersProfileController extends Controller
         
         $fileNameToStore = '';
         $validation = Validator::make($request->all(), [
-            'businessName' => '|required|',
+            'business_name' => '|required|',
             'location' => '|required|',
             'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
         ]);
@@ -111,7 +111,7 @@ class CustomersProfileController extends Controller
                     File::makeDirectory($path, $mode = 0777, true, true);
                 }
                 $extension = $request->file('profile_image_url')->getClientOriginalExtension();
-                $filename = str_replace(" ","_", $request->fullname);
+                $filename = str_replace(" ","_", $request->full_name);
                 $fileNameToStore = $filename . '_' . $request->user_id . '.' . $extension;
                 $request->file('profile_image_url')->move(public_path('uploads/User_Documents'), $fileNameToStore);
 
@@ -129,7 +129,7 @@ class CustomersProfileController extends Controller
         {
             $updated = Vendor_profile::where('user_id', $request->user_id)
             ->update([
-                'businessName' => $request->businessName,
+                'business_name' => $request->business_name,
                 'location'=>$request->location,
                 'profile_image_url'=>$fileNameToStore
             ]);
@@ -138,7 +138,7 @@ class CustomersProfileController extends Controller
         else{
             $user = User_signup_status::where('user_id', $request->user_id)
             ->update([
-                'isProfileComplete' => "Yes",
+                'is_profile_complete' => "Yes",
             ]);
 
             $isExist = User::select("*")
@@ -150,7 +150,7 @@ class CustomersProfileController extends Controller
             {
                 $user = User::where('id', $request->user_id)
                 ->update([
-                    'isSignupComplete' => "1",
+                    'is_Signup_Complete' => "1",
                 ]);
             }
 
@@ -158,7 +158,7 @@ class CustomersProfileController extends Controller
 
             $vendor_profile = new Vendor_profile();
             $vendor_profile->user_id = $request->user_id;
-            $vendor_profile->businessName = $request->businessName;
+            $vendor_profile->business_name = $request->business_name;
             $vendor_profile->location = $request->location;
             $vendor_profile->profile_image_url= $fileNameToStore;
             $saved=$vendor_profile->save();

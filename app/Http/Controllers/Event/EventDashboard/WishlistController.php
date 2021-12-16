@@ -25,9 +25,9 @@ class WishlistController extends Controller
    {
 
     $validation = Validator::make($request->all(), [
-        'giftName' => '|required',
-        'accountInfo' => '|required',
-        'additionalInfo' => '|required',
+        'gift_name' => '|required',
+        'account_info' => '|required',
+        'additional_info' => '|required',
         'price' => '|required|',
         
     ]);
@@ -39,15 +39,15 @@ class WishlistController extends Controller
           , 400); 
     }
             $isExist = Wishlist::select("id")
-            ->where("giftName", $request->giftName)
+            ->where("gift_name", $request->gift_name)
             ->exists();
 
             if($isExist){  return response()->json(['error'=>'Already Exists','message'=>"Invalid request as data already exists"], 403);  }
 
             $wishlist = new Wishlist();
-            $wishlist->giftName = $request->giftName;
-            $wishlist->accountInfo = $request->accountInfo; 
-            $wishlist->additionalInfo = $request->additionalInfo;
+            $wishlist->gift_name = $request->gift_name;
+            $wishlist->account_info = $request->account_info; 
+            $wishlist->additional_info = $request->additional_info;
             $wishlist->event_id =$event_id;
             $wishlist->price = $request->price;
             $saved=$wishlist->save();
@@ -87,9 +87,9 @@ class WishlistController extends Controller
             
             $updated = Wishlist::where("id", $wishlist_id)
             ->update([
-                'giftName' => $request->giftName,
-                'accountInfo' => $request->accountInfo,
-                'additionalInfo' => $request->additionalInfo,
+                'gift_name' => $request->gift_name,
+                'account_info' => $request->account_info,
+                'additional_info' => $request->additional_info,
                 'price' => $request->price,
 
             ]);

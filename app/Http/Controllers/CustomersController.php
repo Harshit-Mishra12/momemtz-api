@@ -34,8 +34,8 @@ class CustomersController extends Controller
             $validation = Validator::make($request->all(), [
                 'email' => '|required|email',
                 'password' => '|required|min:6',
-                'pNumber' => '|required|',
-                'countryCode' => '|required|',
+                'phone_number' => '|required|',
+                'country_code' => '|required|',
                 'date' => '|required|'
             ]);
             //$this->checkIfUserAlreadyExists($request->email);
@@ -50,8 +50,8 @@ class CustomersController extends Controller
                 // $user =DB::select(" SELECT users.id, date,users.email
                 // FROM (users
                 // INNER JOIN user_signup_statuses ON user_signup_statuses.user_id = users.id)
-                // WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.isOtpVerified = 'Yes'
-                // AND user_signup_statuses.isProfileComplete	 = 'Yes' AND      user_signup_statuses.isInterestChoosen = 'Yes'
+                // WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.is_otp_verified = 'Yes'
+                // AND user_signup_statuses.is_profile_complete	 = 'Yes' AND      user_signup_statuses.is_interest_choosen = 'Yes'
                 // ");
                 return response()->json(['statusCode'=>'400','User already Exists' => "yes"], 400); 
             }
@@ -60,17 +60,17 @@ class CustomersController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->user_type = $request->userType;
-            $user->phone_number = $request->pNumber;
-            $user->country_code = $request->countryCode;
+            $user->phone_number = $request->phone_number;
+            $user->country_code = $request->country_code;
             $user->date = $request->date;
             $request->session()->put('user', $user);
             $saved=$user->save();
             
             $user_signup_status =new User_signup_status();
             $user_signup_status->user_id=$user->id;
-            $user_signup_status->isOtpVerified = "No";
-            $user_signup_status->isProfileComplete = "No";  
-            $user_signup_status->isInterestChoosen = "No";
+            $user_signup_status->is_otp_verified = "No";
+            $user_signup_status->is_profile_complete = "No";  
+            $user_signup_status->is_interest_choosen = "No";
             $user_signup_status->save();
             //create otp
             
@@ -78,7 +78,7 @@ class CustomersController extends Controller
            // $otp_get = $request->session()->get('verification_otp');
             if($otp)
             {
-              $smsResponse= $this->sendOtpAsSms($request->pNumber,"OTP: $otp");
+              $smsResponse= $this->sendOtpAsSms($request->phone_number,"OTP: $otp");
             }
        }
       
@@ -128,7 +128,7 @@ class CustomersController extends Controller
                 else{
                     $user = User_signup_status::where('user_id', $request->user_id)
                     ->update([
-                        'isOtpVerified' => "Yes",
+                        'is_otp_verified' => "Yes",
                     ]);
                     return response()->json(['statusCode'=>'200','message'=>'Otp is Verified'], 200);
                 }
@@ -146,8 +146,8 @@ class CustomersController extends Controller
         $data =DB::select(" SELECT users.id, date,users.email
         FROM (users
         INNER JOIN user_signup_statuses ON user_signup_statuses.user_id = users.id)
-        WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.isOtpVerified = 'Yes'
-        AND user_signup_statuses.isProfileComplete	 = 'Yes' AND      user_signup_statuses.isInterestChoosen = 'Yes'
+        WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.is_otp_verified = 'Yes'
+        AND user_signup_statuses.is_profile_complete	 = 'Yes' AND      user_signup_statuses.is_interest_choosen = 'Yes'
         ");
 
         if (empty($data )) {return false;}
@@ -165,14 +165,14 @@ class CustomersController extends Controller
         }
         return $otp;
     }
-    public function sendOtpAsSms($pNumber,$otp)
+    public function sendOtpAsSms($phone_number,$otp)
     {
         // $data = array('apikey' =>'1zVb3P05JCBEo7sVATXRQAtAxYV', 'to' => $numbers, "sender" => $sender, "message" => $message);
         $data = [
                     'api_key' =>'1zVb3P05JCBEo7sVATXRQAtAxYV',
                     'api_secret' =>'QX41pNQS56vnVAmvppCsEIUIFMVzGcF76BKGFJNk',
                     'text' => $otp,
-                    'to' =>$pNumber,
+                    'to' =>$phone_number,
                     'message'=>'123432',
                     'from' => 'Party App'
                 ];
@@ -211,70 +211,125 @@ class CustomersController extends Controller
 
          //return true;
     }
-
     public function actionCustomerInterest(Request $request)
-    {
-        $data=$request->categoryIds;
-        $Music = $Sports = $Games = $Eating = $Dancing = $Tech='0';
-        if (in_array("Music", $data)){ $Music = '1';}
-        if (in_array("Sports", $data)){ $Sports = '1';}
-        if (in_array("Games", $data)){ $Games = '1';}
-        if (in_array("Eating", $data)){ $Eating = '1';}
-        if (in_array("Dancing", $data)){ $Dancing = '1';}
-        if (in_array("Tech", $data)){ $Tech = '1';}
-        
-        $isExist = User_interest::select("*")
-            ->where("user_id", $request->user_id)
-            ->exists();
-            $updated='';
-            $saved='';
-        if($isExist)
+    {         
+        $data=$request->category_Ids;
+        $this->checkifexists($data,$request->user_id);
+        $count=0;
+        for($i=0;$i<count($data);$i++)
         {
-            $updated = User_interest::where('user_id', $request->user_id)
-            ->update([
-                'Music' =>$Music,
-                'Sports' =>$Sports,
-                'Games' =>$Games,
-                'Eating' =>$Eating,
-                'Dancing' =>$Dancing,
-                'Tech' =>$Tech,
-            ]);
-        }
-        else{
-
             $user_interest = new User_interest();
             $user_interest->user_id = $request->user_id;
+            $user_interest->is_active = "1";
+            $user_interest->interest_category_id = $data[$i];
+            $count++;
+            $saved=$user_interest->save(); 
+        }
+        $fetch_categories = User_interest::select("interest_categories.category_id","interest_categories.name")
+            ->join('interest_categories', 'interest_categories.category_id', 'user_interests.interest_category_id')
+             ->where("user_id", $request->user_id)
+             ->where("is_active", "1")
+             ->get();
 
-            $user_interest->Music = $Music;
-            $user_interest->Sports = $Sports;
-            $user_interest->Games = $Games;
-            $user_interest->Eating = $Eating;
-            $user_interest->Dancing = $Dancing;
-            $user_interest->Tech = $Tech;
-            
-            $saved=$user_interest->save();
-
-            $user = User_signup_status::where('user_id', $request->user_id)
+     $user = User_signup_status::where('user_id', $request->user_id)
             ->update([
-                'isInterestChoosen' => "Yes",
+                'is_interest_choosen' => "Yes",
             ]);
             $user = User::where('id', $request->user_id)
             ->update([
-                'isSignupComplete' => "1",
+                'is_Signup_Complete' => "1",
             ]);
-
+            
+        if($count==count($data))
+        {
+            return response()->json(['statusCode'=>'200','data'=>$fetch_categories], 200);   
         }
-            if($saved)
-            {
-                return response()->json(['statusCode'=>'200','data'=>$user_interest], 200); 
+        else{
+            return response()->json(['statusCode'=>'400','message'=>'data is not saved'], 400); 
             }
-            elseif($updated){
-                return response()->json(['statusCode'=>'200','message'=>"data is saved "], 200); 
-            }
-            else{
-                return response()->json(['statusCode'=>'400','message'=>'data is not saved'], 400); 
+                
+    }
+    public function checkifexists($data,$user_id)
+    {
+        $exists = User_interest::select("*")
+         ->where("user_id", $user_id)
+         ->exists();
+
+         $updated = User_interest::where('user_id', $user_id)
+           ->update([
+                'is_active' =>"0",
+             ]);
+        if($updated)
+        {
+            return true;
+        }
+        else{
+            return false;
             }
     }
+    // public function actionCustomerInterest(Request $request)
+    // {
+    //     $data=$request->categoryIds;
+    //     $Music = $Sports = $Games = $Eating = $Dancing = $Tech='0';
+    //     if (in_array("Music", $data)){ $Music = '1';}
+    //     if (in_array("Sports", $data)){ $Sports = '1';}
+    //     if (in_array("Games", $data)){ $Games = '1';}
+    //     if (in_array("Eating", $data)){ $Eating = '1';}
+    //     if (in_array("Dancing", $data)){ $Dancing = '1';}
+    //     if (in_array("Tech", $data)){ $Tech = '1';}
+        
+    //     $isExist = User_interest::select("*")
+    //         ->where("user_id", $request->user_id)
+    //         ->exists();
+    //         $updated='';
+    //         $saved='';
+    //     if($isExist)
+    //     {
+    //         $updated = User_interest::where('user_id', $request->user_id)
+    //         ->update([
+    //             'Music' =>$Music,
+    //             'Sports' =>$Sports,
+    //             'Games' =>$Games,
+    //             'Eating' =>$Eating,
+    //             'Dancing' =>$Dancing,
+    //             'Tech' =>$Tech,
+    //         ]);
+    //     }
+    //     else{
+
+    //         $user_interest = new User_interest();
+    //         $user_interest->user_id = $request->user_id;
+
+    //         $user_interest->Music = $Music;
+    //         $user_interest->Sports = $Sports;
+    //         $user_interest->Games = $Games;
+    //         $user_interest->Eating = $Eating;
+    //         $user_interest->Dancing = $Dancing;
+    //         $user_interest->Tech = $Tech;
+            
+    //         $saved=$user_interest->save();
+
+    //         $user = User_signup_status::where('user_id', $request->user_id)
+    //         ->update([
+    //             'is_interest_choosen' => "Yes",
+    //         ]);
+    //         $user = User::where('id', $request->user_id)
+    //         ->update([
+    //             'is_Signup_Complete' => "1",
+    //         ]);
+
+    //     }
+    //         if($saved)
+    //         {
+    //             return response()->json(['statusCode'=>'200','data'=>$user_interest], 200); 
+    //         }
+    //         elseif($updated){
+    //             return response()->json(['statusCode'=>'200','message'=>"data is saved "], 200); 
+    //         }
+    //         else{
+    //             return response()->json(['statusCode'=>'400','message'=>'data is not saved'], 400); 
+    //         }
+    // }
     public function actionForgetPassword(Request $request)
     {
         $gen_Password = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyzABCDEFGHIJKLMNOPQRSTVWXYZ"), 0, 8);
@@ -283,7 +338,7 @@ class CustomersController extends Controller
             ->join('user_profiles', 'user_profiles.user_id', 'users.id')
             ->where("email", $request->email)
             ->where("phone_number", $request->phone_number)
-            ->where("isSignupComplete",1)
+            ->where("is_Signup_Complete",1)
             ->get();
          $auth_name=$isExist[0]['fullName'];
         //  return response()->json(['data' => $isExist[0]['fullName']]);
@@ -291,7 +346,7 @@ class CustomersController extends Controller
             $email=$request->email;
             $user = User::where('email', $request->email)
                 ->where('phone_number', $request->phone_number)
-                ->where('isSignupComplete', '1')
+                ->where('is_Signup_Complete', '1')
                 ->update([
                     'password' => Hash::make($gen_Password),
                 ]);
