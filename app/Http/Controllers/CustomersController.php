@@ -36,7 +36,8 @@ class CustomersController extends Controller
                 'password' => '|required|min:6',
                 'phone_number' => '|required|',
                 'country_code' => '|required|',
-                'date' => '|required|'
+                'dob' => '|required|',
+                'user_type'=>'|required|'
             ]);
             //$this->checkIfUserAlreadyExists($request->email);
         if(!$validation->passes())
@@ -45,24 +46,22 @@ class CustomersController extends Controller
             return response()->json(['statusCode'=>'400','validation Error/Inavlid request from the client side' => 'yes'], 400);
         }
        else{
-            if($this->checkIfUserAlreadyExists($request->email))
-            {
-                // $user =DB::select(" SELECT users.id, date,users.email
-                // FROM (users
-                // INNER JOIN user_signup_statuses ON user_signup_statuses.user_id = users.id)
-                // WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.is_otp_verified = 'Yes'
-                // AND user_signup_statuses.is_profile_complete	 = 'Yes' AND      user_signup_statuses.is_interest_choosen = 'Yes'
-                // ");
-                return response()->json(['statusCode'=>'400','User already Exists' => "yes"], 400); 
-            }
+            $data=$this->checkIfUserAlreadyExists($request->email,$request->phone_number,$request->user_type);
+            
+                if(!empty($data))
+                {
+                    return response()->json(['statusCode'=>'4','message' => "data exists",'data'=>$data], 400); 
+                }
+                
+                
 
             $user = new User();
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
-            $user->user_type = $request->userType;
+            $user->user_type = $request->user_type;
             $user->phone_number = $request->phone_number;
             $user->country_code = $request->country_code;
-            $user->date = $request->date;
+            $user->dob = $request->dob;
             $request->session()->put('user', $user);
             $saved=$user->save();
             
@@ -76,12 +75,16 @@ class CustomersController extends Controller
             
             $otp=$this->createOtp($user);
            // $otp_get = $request->session()->get('verification_otp');
+           $phone_number=$request->country_code.$request->phone_number;
             if($otp)
-            {
-              $smsResponse= $this->sendOtpAsSms($request->phone_number,"OTP: $otp");
+            { $smsResponse="1";  
+              $smsResponse= $this->sendOtpAsSms($phone_number,"OTP: $otp");
+              if($smsResponse=="2")
+              {
+                return response()->json(['statusCode'=>'2','message' => 'otp is not sent'],400);   
+              }
             }
        }
-      
                if($saved)
                {
                 return response()->json(['statusCode'=>'200','data'=>$user], 200);
@@ -94,7 +97,6 @@ class CustomersController extends Controller
     public function actionVerifyOtp(Request $request)
     {
            // get user_id,otp in post parameter
-
            // vaildation check
            $validation = Validator::make($request->all(), [
             'user_id' => '|required|',
@@ -137,21 +139,40 @@ class CustomersController extends Controller
             else{
                 return response()->json(['statusCode'=>'500','message'=>'Otp is not Verified'], 500); 
             }
-
-
-
     }
-    public function checkIfUserAlreadyExists($email)
+    public function checkIfUserAlreadyExists($email,$phone_number,$user_type)
     {   
-        $data =DB::select(" SELECT users.id, date,users.email
-        FROM (users
-        INNER JOIN user_signup_statuses ON user_signup_statuses.user_id = users.id)
-        WHERE users.email='harshit@gmail.com'  AND user_signup_statuses.is_otp_verified = 'Yes'
-        AND user_signup_statuses.is_profile_complete	 = 'Yes' AND      user_signup_statuses.is_interest_choosen = 'Yes'
+        // $data =DB::select(" SELECT users.id, date,users.email
+        // FROM (users
+        // INNER JOIN user_signup_statuses ON user_signup_statuses.user_id = users.id)
+        // WHERE users.email='davidwarner@gmail.com'  AND user_signup_statuses.is_otp_verified = 'Yes'
+        // AND user_signup_statuses.is_profile_complete = 'Yes' AND user_signup_statuses.is_interest_choosen = 'Yes'
+        // ");
+        
+        $data =DB::select("Select * from users where is_Signup_Complete = '1'and user_type='$user_type' and  
+        (email = '$email' or phone_number = '$phone_number')
         ");
-
-        if (empty($data )) {return false;}
-        else{return false;}
+        // $data = User::select("users.id","users.email")
+        // ->join('user_signup_statuses', 'user_signup_statuses.user_id', 'users.id')
+        //  ->where("users.email", $email)
+        //  ->where("user_signup_statuses.is_otp_verified", 'Yes')
+        //  ->where("user_signup_statuses.is_profile_complete", 'Yes')
+        //  ->where("user_signup_statuses.is_interest_choosen", 'Yes')
+        //  ->exists();
+        //  $data = User::select("users.id","users.email")
+        //  ->orWhere("users.email", $email)
+        //  ->orWhere("users.phone_number", $phone_number)
+        //  ->where("users.is_Signup_Complete", '1')
+        //  ->exists();
+        // $data = User::where('is_Signup_Complete','1')->where(function($query) {
+		// 	$query->where('email',$email)
+		// 				->orWhere('phone_number',$phone_number);
+        //     })->get();
+            return $data;
+        // if ($data) {
+        //     return true;}
+        // else{return false;}
+   
     }
     public function createOtp($user)
     {
@@ -186,6 +207,7 @@ class CustomersController extends Controller
         //     "cache-control: no-cache"
         //   ));
         $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         // $client = new \GuzzleHttp\Client();
         // $payload = [
         //     'api_key' =>'1zVb3P05JCBEo7sVATXRQAtAxYV',
@@ -204,9 +226,11 @@ class CustomersController extends Controller
         // ->setData($payload)
         // ->send();
 
-        if (1) {
-            return $response; 
-           
+        if ($httpcode=="200") {
+            return $response;  
+        }
+        else{
+            return "2";
         }
 
          //return true;
@@ -332,17 +356,41 @@ class CustomersController extends Controller
     // }
     public function actionForgetPassword(Request $request)
     {
+        $validation = Validator::make($request->all(), [
+            'email' => '|required|email',
+            'phone_number' => '|required|',
+            'phone_without_Code'=>'|required|',
+        ]);
+       
+        if(!$validation->passes())
+        {
+            
+            return response()->json(['status_code'=>'4','validation Error/Inavlid request from the client side' => 'yes'], 400);
+        }
+
         $gen_Password = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyzABCDEFGHIJKLMNOPQRSTVWXYZ"), 0, 8);
         $auth_name='';
-        $isExist = User::select("user_profiles.fullName")
-            ->join('user_profiles', 'user_profiles.user_id', 'users.id')
-            ->where("email", $request->email)
-            ->where("phone_number", $request->phone_number)
-            ->where("is_Signup_Complete",1)
+        $data = User::select("vendor_profiles.business_name")
+            ->join('vendor_profiles', 'vendor_profiles.user_id', 'users.id')
+            ->where("is_Signup_Complete","1")
+            ->where("user_type",$request->user_type)
+            ->where("email",$request->email)
+            ->Where("phone_number",$request->phone_without_Code)
             ->get();
-         $auth_name=$isExist[0]['fullName'];
-        //  return response()->json(['data' => $isExist[0]['fullName']]);
-        if (!empty($isExist)) {
+        // $data =DB::select("Select * from (users INNER JOIN vendor_profiles ON vendor_profiles.user_id = users.id) where is_Signup_Complete = '1' and
+        // (email = '$email' or phone_number = $phone_without_Code)
+        // ");
+        
+         // return response()->json(['data' => $data]);
+        if (!empty($data[0])) {
+           
+            $auth_name=$data[0]['full_name'];
+            //send new password to phone number
+            $smsResponse= $this->sendOtpAsSms($request->phone_number,"New Password: $gen_Password");
+              if($smsResponse=="2")
+              {
+                return response()->json(['status_code'=>'12','message' => 'password is not sent'],400);   
+              }
             $email=$request->email;
             $user = User::where('email', $request->email)
                 ->where('phone_number', $request->phone_number)
@@ -350,7 +398,7 @@ class CustomersController extends Controller
                 ->update([
                     'password' => Hash::make($gen_Password),
                 ]);
-           // dd($request->emailResetPwd);
+       
             //$data = ['reset_password' => $random_no];
 
            // Mail::to($request->emailResetPwd)->send(new WelcomeMail($data));
@@ -365,14 +413,15 @@ class CustomersController extends Controller
           });
           // return response()->json(['email_success' => 'yes']);
             if (empty(Mail::failures())) {
-                return response()->json(['email_success' => 'yes']);
+                return response()->json(['status_code'=>'1','email_success' => 'yes']);
             } 
             else {
-                return response()->json(['email_success' => 'no']);
+                return response()->json(['status_code'=>'2','email_success' => 'no']);
             }
         } 
         else {
-            return response()->json(['error_message' => 'yes']);
+            // return response()->json(['error_message' => 'yes']);
+            return response()->json(['status_code'=>'5','message'=>'user does not exist'], 400); 
         }
     }
 
