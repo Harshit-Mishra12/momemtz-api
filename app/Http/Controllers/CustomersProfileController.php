@@ -25,7 +25,7 @@ class CustomersProfileController extends Controller
             'full_name' => '|required|',
             'location_city' => '|required|',
             'location_country' => '|required|',
-            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
+            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:10000'
         ]);
         if(!$validation->passes())
         {
@@ -99,12 +99,12 @@ class CustomersProfileController extends Controller
         $validation = Validator::make($request->all(), [
             'business_name' => '|required|',
             'location' => '|required|',
-            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:5000'
+            'profile_image_url' => 'required|mimes:jpeg,jpg,png|max:10000'
         ]);
         if(!$validation->passes())
         {
             // return 'Password reset token successfully sent to the user';
-            return response()->json(['statusCode'=>'400','validation Error/Inavlid request from the client side' => 'yes'], 400);
+            return response()->json(['statusCode'=>'400','validation Error/Inavlid request from the client side' => 'yes','data'=>$request], 400);
         }
                 $path = public_path() . '/uploads/User_Documents';
                 if (!File::exists($path)) {
