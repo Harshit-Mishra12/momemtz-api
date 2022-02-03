@@ -46,7 +46,7 @@ class ExploreEventController extends Controller
             $my_lng=$request->locationLon;
             $dist=5; #10 miles radius
 
-            $events_data =DB::select("SELECT dest.id,dest.categoryInterestName, dest.locationLat, dest.locationLon,  3956 * 2 * ASIN(SQRT(POWER(SIN(($my_lat -abs(dest.locationLat)) * pi()/180 / 2),2) + COS($my_lat * pi()/180 ) * COS(abs(dest.locationLat) *  pi()/180) * POWER(SIN(($my_lng - abs(dest.locationLon)) *  pi()/180 / 2), 2))
+            $events_data =DB::select("SELECT dest.id,dest.event_interest_category_id, dest.locationLat, dest.locationLon,  3956 * 2 * ASIN(SQRT(POWER(SIN(($my_lat -abs(dest.locationLat)) * pi()/180 / 2),2) + COS($my_lat * pi()/180 ) * COS(abs(dest.locationLat) *  pi()/180) * POWER(SIN(($my_lng - abs(dest.locationLon)) *  pi()/180 / 2), 2))
             ) as distance
             FROM events as dest
             having distance < $dist

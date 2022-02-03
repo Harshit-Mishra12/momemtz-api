@@ -177,4 +177,13 @@ class CustomersProfileController extends Controller
                 }
 
     }
+    public function fetchCustomerProfile(Request $request,$customerId)
+    {
+        $user_profile = User_profile::select("*")
+        ->where("user_id", $customerId)
+        ->get();
+    
+
+        return response()->json(['statusCode'=>'10','data' => $user_profile], 200);  
+    }
 }

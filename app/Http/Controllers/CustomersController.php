@@ -53,8 +53,6 @@ class CustomersController extends Controller
                     return response()->json(['statusCode'=>'4','message' => "data exists",'data'=>$data], 400); 
                 }
                 
-                
-
             $user = new User();
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
@@ -79,6 +77,7 @@ class CustomersController extends Controller
             if($otp)
             { $smsResponse="1";  
               $smsResponse= $this->sendOtpAsSms($phone_number,"OTP: $otp");
+             // return response()->json(['status_code'=>'12','data' => $smsResponse],400);
               if($smsResponse=="2")
               {
                 return response()->json(['statusCode'=>'2','message' => 'otp is not sent'],400);   
@@ -387,6 +386,7 @@ class CustomersController extends Controller
             $auth_name=$data[0]['full_name'];
             //send new password to phone number
             $smsResponse= $this->sendOtpAsSms($request->phone_number,"New Password: $gen_Password");
+          
               if($smsResponse=="2")
               {
                 return response()->json(['status_code'=>'12','message' => 'password is not sent'],400);   
