@@ -24,7 +24,6 @@ class TicketController extends Controller
     $validation = Validator::make($request->all(), [
         'name' => '|required',
         'description' => '|required',
-        'customer_id' => '|required|',
         'stock' => '|required|',
         'price' => '|required|',
         
@@ -35,9 +34,10 @@ class TicketController extends Controller
     }
             $isExist = Ticket::select("id")
             ->where("name", $request->name)
+            ->where("event_id", $event_id)
             ->exists();
 
-            if($isExist){  return response()->json(['statusCode'=>'400','uniqueCode'=>'2','message'=>"Name already present"], 400);  }
+            if($isExist){  return response()->json(['statusCode'=>'400','status_code'=>'2','message'=>"Name already present"], 400);  }
 
             $ticket = new Ticket();
             $ticket->name = $request->name;

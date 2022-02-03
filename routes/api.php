@@ -41,7 +41,7 @@ Route::group([
     Route::get('/customers/{customerId}/events','App\Http\Controllers\Event\EventsController@fetchEvents');
     Route::put('/events/{eventId}','App\Http\Controllers\Event\EventsController@updateEvents');
     Route::get('/events','App\Http\Controllers\Event\EventsController@fetchAllEvents');
-    Route::post('events/{eventId}/publish','App\Http\Controllers\Event\EventsController@actionPublishEvent');
+    Route::post('/events/{eventId}/publish','App\Http\Controllers\Event\EventsController@actionPublishEvent');
     
 
     // delete event api
@@ -52,7 +52,7 @@ Route::group([
     Route::get('/customers/{customerId}/active-events','App\Http\Controllers\Event\EventsController@fetchActiveEvent');
 
     
-    Route::get('/upcoming-events','App\Http\Controllers\Event\EventsController@fetchUpcomingEvent');
+    Route::get('/customers/{customerId}/upcoming-events','App\Http\Controllers\Event\EventsController@fetchUpcomingEvent');
     Route::get('/customers/{customerId}/completed-events','App\Http\Controllers\Event\EventsController@fetchCompletedEvent');
     Route::get('/customers/{customerId}/unpublished-events','App\Http\Controllers\Event\EventsController@fetchUnpublishEvent');
     
@@ -79,9 +79,10 @@ Route::group([
     
     Route::get('/exploreNearbyEvents','App\Http\Controllers\Explore\ExploreEventController@fetchExploreNearbyEvents');
     Route::get('/fetchExploreEventDetails/id={eventId}','App\Http\Controllers\Explore\ExploreEventController@fetchExploreEventDetails');
-   
-    Route::post('/exploreFetchAllEventFilter','App\Http\Controllers\Explore\ExploreEventFilterController@ExploreEventFilter');
-       
+    Route::post('/customers/{customerId}/events-filters','App\Http\Controllers\Explore\ExploreEventFilterController@ExploreEventFilter');
+    Route::post('/customers/{customerId}/upcoming-events-filters','App\Http\Controllers\Explore\ExploreEventFilterController@ExploreUpcomingEventFilter');
+    //customer profile
+    Route::get('/customers/{customerId}/profiles','App\Http\Controllers\CustomersProfileController@fetchCustomerProfile');
     //vendor product
     
     // Route::post('/createProduct/id={vendorId}','App\Http\Controllers\Vendor\ProductController@createProduct');

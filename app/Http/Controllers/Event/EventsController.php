@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\User_transaction;
 use App\Models\Ticket;
 use App\Models\Dresscode;
 use App\Models\Event_dashboard_status;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon;
+use File;
 
 class EventsController extends Controller
 {
@@ -23,19 +25,32 @@ class EventsController extends Controller
 
     $validation = Validator::make($request->all(), [
         'title' => '|required',
-        'description' => '|required',
-        'category_interest_name' => '|required|',
+        'description' => '|required', 
+        'customer_id' => '|required', 
         'event_type_id' => '|required|',
+        'event_interest_category_id'=> '|required|',
         'budget' => '|required|',
         'datetime' => '|required|',
         'location_title' => '|required|',
         'location_lon' => '|required|',
-        'location_lat' => '|required|'
+        'location_lat' => '|required|',
+        'event_image_url' => 'required|mimes:jpeg,jpg,png|max:10000'
     ]);
     if(!$validation->passes())
     {
         return response()->json(['statusCode'=>'400','validation Error/Inavlid request from the client side' => 'yes'], 400);
     }
+    $path = public_path() . '/uploads/Event_Documents';
+    if (!File::exists($path)) {
+        File::makeDirectory($path, $mode = 0777, true, true);
+    }
+    $extension = $request->file('event_image_url')->getClientOriginalExtension();
+    $filename = str_replace(" ","_", $request->title);
+    // $fileNameToStore = $filename . '_' . '.' . $extension;
+    $fileNameToStore = $filename . '_' . $request->customer_id . '.' . $extension;
+    $request->file('event_image_url')->move(public_path('uploads/Event_Documents'),$fileNameToStore);
+    
+
             $isExist = Event::select("id")
             ->where("title", $request->title)
             ->exists();
@@ -46,13 +61,14 @@ class EventsController extends Controller
             $event->title = $request->title;
             $event->description = $request->description;
             $event->customer_id = $request->customer_id;
-            $event->category_interest_name = $request->category_interest_name;
+            $event->event_interest_category_id = $request->event_interest_category_id;
             $event->event_type_id = $request->event_type_id;
             $event->budget = $request->budget;
             $event->datetime = $request->datetime;
             $event->location_title = $request->location_title;
             $event->location_lon = $request->location_lon;
-            $event->location_lat = $request->location_lat;
+            $event->location_lat = $request->location_lat; 
+            $event->event_image_url = $fileNameToStore;
             $event->save();
 
             $event_dashboard_status = new Event_dashboard_status();
@@ -66,7 +82,7 @@ class EventsController extends Controller
 
             if($saved)
             {
-                return response()->json(['statusCode'=>'200','message'=>"data saved successfully"], 200);  
+                return response()->json(['statusCode'=>'200','event_id'=>$event->id,'message'=>"data saved successfully"], 200);  
             }
             else{
                 return response()->json(['statusCode'=>'500','message'=>"data not saved"], 500);   
@@ -131,7 +147,7 @@ class EventsController extends Controller
 
    }
 
-   public function actionPublishEvent(Request $request,$event_id)
+   public function actionPublishEvent($event_id)
    {
         $isExist = Ticket::select("id")
         ->where("event_id", $event_id)
@@ -139,7 +155,7 @@ class EventsController extends Controller
 
         if(!$isExist)
         {
-            return response()->json(['statusCode'=>'409','error'=>'no ticket exists','message'=>'no ticket exists to publish this event'], 409);   
+            return response()->json(['status_code'=>'2','error'=>'no ticket exists','message'=>'no ticket exists to publish this event'], 409);   
         }
         else{
 
@@ -147,7 +163,7 @@ class EventsController extends Controller
             ->update([
                 'isActive' => "1",
             ]);
-            return response()->json(['statusCode'=>'200','message'=>'event is published'], 200); 
+            return response()->json(['status_code'=>'1','message'=>'event is published'], 200); 
         }
 
    }
@@ -184,26 +200,47 @@ class EventsController extends Controller
                 return response()->json(['statusCode'=>'200','data'=>$active_event], 200); 
             }
    }
-   public function fetchUpcomingEvent()
-   { 
-       // https://laravel.io/forum/02-20-2015-using-carbon-to-get-next-weeks-dates
-            $today_date = Carbon\Carbon::now();
-            $date = Carbon\Carbon::now()->addDays(10);
-            $active_event = Event::select("*")
-            ->where("isActive",1)
-            ->whereDate('datetime', '<',$date)
-            ->whereDate('datetime', '>',$today_date)
-            ->get();
+//    public function fetchUpcomingEvent()
+//    { 
+//        // https://laravel.io/forum/02-20-2015-using-carbon-to-get-next-weeks-dates
+//             $today_date = Carbon\Carbon::now();
+//             $date = Carbon\Carbon::now()->addDays(10);
+//             $active_event = Event::select("*")
+//             ->where("isActive",1)
+//             ->whereDate('datetime', '<',$date)
+//             ->whereDate('datetime', '>',$today_date)
+//             ->get();
 
         
-            if(count($active_event) === 0)
-            { return response()->json(['statusCode'=>'404','message'=>"Not found"], 404);
+//             if(count($active_event) === 0)
+//             { return response()->json(['statusCode'=>'404','message'=>"Not found"], 404);
                 
-            }
-            else{  
-                return response()->json(['statusCode'=>'200','data'=>$active_event], 200); 
-            }
-   }
+//             }
+//             else{  
+//                 return response()->json(['statusCode'=>'200','data'=>$active_event], 200); 
+//             }
+//    }
+
+    public function fetchUpcomingEvent(Request $request,$customer_id)
+        {
+          
+      $data = Event::select("*")
+         ->join('user_transactions', 'user_transactions.event_id', 'events.id')
+         ->where("events.customer_id", $customer_id)
+         ->where("events.event_type_id", '2')
+         ->where("isActive",1)
+         ->get();
+                  if(count($data) === 0)
+                     { return response()->json(['statusCode'=>'4','message'=>"No data exists!!"], 404);
+                         
+                     }
+                     else{  
+                         return response()->json(['statusCode'=>'200','message'=>"data exists!!",'data'=>$data], 200); 
+                     }
+
+      return response()->json(['statusCode'=>'200','data'=> $data], 200); 
+            
+        }
    public function fetchCompletedEvent(Request $request)
    { 
       
